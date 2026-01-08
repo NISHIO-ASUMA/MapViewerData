@@ -1,0 +1,237 @@
+//=====================================
+//
+// ポーズ管理処理 [ pausemanager.cpp ]
+// Author: Asuma Nishio
+//
+//=====================================
+
+//**************************
+// インクルードファイル宣言
+//**************************
+#include "pausemanager.h"
+#include "manager.h"
+#include "fade.h"
+#include "input.h"
+#include "title.h"
+#include "game.h"
+
+//***************************
+// 名前空間
+//***************************
+namespace PAUSEMANAGEINFO
+{
+	inline const D3DXVECTOR3 BACEPOS = { 200.0f,180.0f,0.0f }; // 基準点座標
+
+	constexpr int FLASHFLAME = 60;				// 点滅間隔
+	constexpr float BACEWIDTH = 180.0f;			// 基準の横幅
+	constexpr float BACEHEIGHT = 40.0f;			// 基準の高さ
+	constexpr float UPPERWIDTH = 180.0f;		// 拡大した横幅
+	constexpr float UPPERHEIGHT = 50.0f;		// 拡大した高さ
+	constexpr float SPACEHEIGHT = 160.0f;		// ポリゴン同士の間隔
+
+};
+
+//***************************
+// 静的メンバ変数宣言
+//***************************
+bool CPauseManager::m_isPause = false; // ポーズフラグ
+
+//==================================
+// コンストラクタ
+//==================================
+CPauseManager::CPauseManager()
+{
+	// 値のクリア
+	m_nSelectIdx = NULL;
+	m_isPause = false;
+
+	for (int nCnt = 0; nCnt < SELECT_MAX; nCnt++)
+	{
+		m_pPause[nCnt] = nullptr;
+	}
+}
+//==================================
+// デストラクタ
+//==================================
+CPauseManager::~CPauseManager()
+{
+	// 無し
+}
+//==================================
+// 初期化処理
+//==================================
+HRESULT CPauseManager::Init(void)
+{
+	// 初期セレクト番号設定
+	m_nSelectIdx = CPause::MENU_RETRY;
+
+	// 基準座標を設定
+	D3DXVECTOR3 Bacepos = PAUSEMANAGEINFO::BACEPOS;
+	
+	// ポーズ生成
+	for (int nPause = 0; nPause < SELECT_MAX; nPause++)
+	{
+		// 座標セット
+		D3DXVECTOR3 pos = Bacepos;
+
+		// 高さを空ける
+		pos.y += nPause * PAUSEMANAGEINFO::SPACEHEIGHT;
+
+		// ポーズUIを生成 
+		if (nPause == CPause::MENU_BACK)
+		{
+			// 背景生成
+			m_pPause[nPause] = CPause::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f,0.0f), SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, COLOR_WHITE, nPause);
+		}
+		else
+		{
+			// 選択用ポリゴンの生成
+			m_pPause[nPause] = CPause::Create(pos, PAUSEMANAGEINFO::BACEWIDTH, PAUSEMANAGEINFO::BACEHEIGHT, COLOR_WHITE, nPause);
+		}
+	}
+
+	// 初期化結果を返す
+	return S_OK;
+}
+//==================================
+// 終了処理
+//==================================
+void CPauseManager::Uninit(void)
+{
+	// 無し
+}
+//==================================
+// 更新処理
+//==================================
+void CPauseManager::Update(void)
+{
+	// ポーズ中じゃなかったら
+	if (!m_isPause)	return;
+
+	// 入力デバイス取得
+	CInputKeyboard* pKey = CManager::GetInputKeyboard();
+	CJoyPad* pJoyPad = CManager::GetJoyPad();
+
+	// nullチェック
+	if (pKey == nullptr) return;
+	if (pJoyPad == nullptr) return;
+
+	// サウンド取得
+	CSound* pSound = CManager::GetSound();
+
+	// nullだったら
+	if (pSound == nullptr) return;
+
+	// 選択インデックス範囲
+	const int SELECT_BEGIN = 1;
+	const int SELECT_END = SELECT_MAX - 1;
+
+	// 上キー入力
+	if (pKey->GetTrigger(DIK_UP) || pKey->GetTrigger(DIK_W) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_UP))
+	{
+		// サウンド再生
+		pSound->PlaySound(pSound->SOUND_LABEL_SELECT);
+
+		// インデックス番号を減算
+		m_nSelectIdx--;
+
+		// 最小値以下なら最小値に設定
+		if (m_nSelectIdx < SELECT_BEGIN)
+			m_nSelectIdx = SELECT_END;
+	}
+
+	// 下キー入力
+	if (pKey->GetTrigger(DIK_DOWN) || pKey->GetTrigger(DIK_S) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_DOWN))
+	{
+		// サウンド再生
+		pSound->PlaySound(pSound->SOUND_LABEL_SELECT);
+
+		// インデックス番号を加算
+		m_nSelectIdx++;
+
+		// 最大値以上なら最大値に設定
+		if (m_nSelectIdx > SELECT_END)
+			m_nSelectIdx = SELECT_BEGIN;
+	}
+
+	// フェード取得
+	CFade* pFade = CManager::GetFade();
+
+	// nullだったら
+	if (pFade == nullptr) return;
+
+	// カメラ取得
+	CCamera* pCamera = CManager::GetCamera();
+
+	// nullだったら
+	if (pCamera == nullptr) return;
+
+	// 選択されているメニューのポリゴンカラーを変更
+	for (int nCnt = 0; nCnt < SELECT_MAX; nCnt++)
+	{
+		// 背景は変えない
+		if (nCnt == CPause::MENU_BACK) continue;
+
+		// nullじゃなかったら
+		if (m_pPause[nCnt] != nullptr)
+		{
+			// カラー変更
+			if (nCnt == m_nSelectIdx)
+			{
+				m_pPause[nCnt]->SetFlash(NULL, PAUSEMANAGEINFO::FLASHFLAME,COLOR_YERROW);			// 点滅処理
+				m_pPause[nCnt]->SetSize(PAUSEMANAGEINFO::UPPERWIDTH, PAUSEMANAGEINFO::UPPERHEIGHT); // 少し大きくする
+			}
+			else
+			{
+				m_pPause[nCnt]->SetCol(COLOR_WHITE);												// 白
+				m_pPause[nCnt]->SetSize(PAUSEMANAGEINFO::BACEWIDTH, PAUSEMANAGEINFO::BACEHEIGHT);	// 元のサイズ
+			}
+		}
+	}
+
+	// Enterキー or Bボタン入力
+	if (pKey->GetTrigger(DIK_RETURN) || pJoyPad->GetTrigger(pJoyPad->JOYKEY_B))
+	{
+		// サウンド再生
+		pSound->PlaySound(pSound->SOUND_LABEL_RETURN);
+
+		switch (m_nSelectIdx)
+		{
+		case CPause::MENU_BACK:	// 背景
+			break;
+
+		case CPause::MENU_RETRY:	// リトライ時
+			if (pFade != nullptr) pFade->SetFade(new CGame());	// ゲームシーンに遷移
+			SetEnablePause(false);	// ポーズ終了
+
+			// 画面クリアをして前の描画情報をなしにする
+			CManager::GetRenderer()->GetDevice()->Clear(0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL), D3DCOLOR_RGBA(0, 0, 0, 225), 1.0f, 0);
+
+			break;
+
+		case CPause::MENU_CONTINUE:	// コンテニュー時
+			SetEnablePause(false);	// ポーズ終了
+			break;
+
+		case CPause::MENU_QUIT:		// 退出時
+			if (pFade != nullptr) pFade->SetFade(new CTitle(true));	// タイトルシーンに遷移
+			SetEnablePause(false);	// ポーズ終了
+
+			break;
+		}
+	}
+}
+//===========================
+// ポーズかどうか
+//===========================
+void CPauseManager::SetEnablePause(void)
+{
+	// Pキー or Start が押された
+	if (CManager::GetInputKeyboard()->GetTrigger(DIK_P) ||
+		CManager::GetJoyPad()->GetTrigger(CJoyPad::JOYKEY_START))
+	{
+		// フラグ変更
+		m_isPause = m_isPause ? false : true;
+		
+	}
+}

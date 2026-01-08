@@ -1,0 +1,53 @@
+//==========================================================
+// 
+// モデルファイル [ ModelFile.txt ]
+// Author : Asuma Nishio
+//
+//==========================================================
+
+//==========================================================
+// 読み込み数
+//==========================================================
+NUM_MODELFILE = 38
+
+//==========================================================
+// 各オブジェクト情報
+//==========================================================
+FILENAME = data/MODEL/STAGEOBJ/decoration1.x
+FILENAME = data/MODEL/STAGEOBJ/tekkotu.x
+FILENAME = data/MODEL/STAGEOBJ/box1.x
+FILENAME = data/MODEL/STAGEOBJ/gomistation.x
+FILENAME = data/MODEL/STAGEOBJ/shredder(BRUE)frame.x
+FILENAME = data/MODEL/STAGEOBJ/shredder(RED)frame.x
+FILENAME = data/MODEL/STAGEOBJ/haikei.x
+FILENAME = data/MODEL/STAGEOBJ/decoration4.x
+FILENAME = data/MODEL/STAGEOBJ/decoration3.x
+FILENAME = data/MODEL/STAGEOBJ/decoration2.x
+FILENAME = data/MODEL/STAGEOBJ/AlphaWall.x
+FILENAME = data/MODEL/STAGEOBJ/Goal.x
+FILENAME = data/MODEL/STAGEOBJ/Green.x
+FILENAME = data/MODEL/STAGEOBJ/Red.x
+FILENAME = data/MODEL/STAGEOBJ/shredderblade.x
+FILENAME = data/MODEL/STAGEOBJ/fence.x
+FILENAME = data/MODEL/STAGEOBJ/block000.x
+FILENAME = data/MODEL/STAGEOBJ/aaaaa.x
+FILENAME = data/MODEL/STAGEOBJ/bbbbb.x
+FILENAME = data/MODEL/STAGEOBJ/gimmick.x
+FILENAME = data/MODEL/STAGEOBJ/Dunbel.x
+FILENAME = data/MODEL/STAGEOBJ/DustBox.x
+FILENAME = data/MODEL/STAGEOBJ/enemy000.x
+FILENAME = data/MODEL/STAGEOBJ/flog_001.x
+FILENAME = data/MODEL/STAGEOBJ/kan.x
+FILENAME = data/MODEL/STAGEOBJ/sentakuki.x
+FILENAME = data/MODEL/STAGEOBJ/Billboard_kanban.x
+FILENAME = data/MODEL/STAGEOBJ/block001.x
+FILENAME = data/MODEL/STAGEOBJ/block002.x
+FILENAME = data/MODEL/STAGEOBJ/Difence000.x
+FILENAME = data/MODEL/STAGEOBJ/Field000.x
+FILENAME = data/MODEL/STAGEOBJ/Guard000.x
+FILENAME = data/MODEL/STAGEOBJ/Shadowmodel.x
+FILENAME = data/MODEL/STAGEOBJ/Spread.x
+FILENAME = data/MODEL/STAGEOBJ/yajirusi.x
+FILENAME = data/MODEL/STAGEOBJ/decoration5.x
+FILENAME = data/MODEL/STAGEOBJ/decoration6.x
+FILENAME = data/MODEL/STAGEOBJ/decoration7.x

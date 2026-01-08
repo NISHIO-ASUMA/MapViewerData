@@ -1,0 +1,56 @@
+{
+   "AllObject": 3,
+   "SetObjects": [
+      {
+         "idx": 0,
+         "Type": 2,
+         "color": 1,
+         "mass": 1,
+         "pos": [
+            -264.0,
+            0.0,
+            -219.0
+         ],
+         "rot": [
+            0.0,
+            0.0,
+            0.0
+         ],
+         "filepath": "data/MODEL/STAGEOBJ/kan.x"
+      },
+      {
+         "idx": 1,
+         "Type": 0,
+         "color": 0,
+         "mass": 0,
+         "pos": [
+            0.0,
+            0.0,
+            -188.0
+         ],
+         "rot": [
+            0.0,
+            0.0,
+            0.0
+         ],
+         "filepath": "data/MODEL/STAGEOBJ/block000.x"
+      },
+      {
+         "idx": 2,
+         "Type": 1,
+         "color": 1,
+         "mass": 2,
+         "pos": [
+            195.0,
+            0.0,
+            -190.0
+         ],
+         "rot": [
+            0.0,
+            0.0,
+            0.0
+         ],
+         "filepath": "data/MODEL/STAGEOBJ/block001.x"
+      }
+   ]
+}
