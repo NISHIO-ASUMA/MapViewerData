@@ -34,7 +34,9 @@ namespace EDITINFO
 	constexpr float VALUESIZE = 0.1f;
 };
 
+//*******************************
 // jsonファイル形式を使用する
+//*******************************
 using json = nlohmann::json;
 using ordered_json = nlohmann::ordered_json;
 
@@ -55,6 +57,7 @@ CEditManager::CEditManager()
 	m_nColType = NULL;
 	m_nMassSet = NULL;
 	m_isStatic = false;
+	m_isMoveVecY = false;
 }
 //=============================
 // デストラクタ
@@ -737,6 +740,13 @@ void CEditManager::ColisionRay(void)
 	// 選択されたら
 	if (m_pSelect != nullptr)
 	{
+		// 縦軸移動フラグ情報
+		if (ImGui::Button("VecMoveY_Set"))
+		{
+			m_isMoveVecY = m_isMoveVecY ? false : true;
+		}
+
+
 		// 固定化されているかどうか
 		bool isStatic = m_pSelect->getIsStatic();
 
@@ -895,8 +905,14 @@ void CEditManager::ColisionRay(void)
 		// 移動速度
 		const float moveSpeed = 2.0f;
 
+		// 一定条件下で縦軸(Y軸の移動)に移動する
+		if (CManager::GetMouse()->GetPress(CInputMouse::MOUSE_LEFT) && m_isMoveVecY)
+		{
+			pos.y += -mouseMove.y * moveSpeed;
+		}
+
 		// 左ドラッグでXZ平面移動
-		if (CManager::GetMouse()->GetPress(CInputMouse::MOUSE_LEFT))
+		if (CManager::GetMouse()->GetPress(CInputMouse::MOUSE_LEFT) && !m_isMoveVecY)
 		{
 			pos += camRight * (mouseMove.x * moveSpeed);
 			pos += -camForward * (mouseMove.y * moveSpeed);

@@ -86,6 +86,7 @@ private:
 	int m_nColType;		// 識別色の種類
 	int m_nMassSet;		// 重さの識別番号
 	bool m_isStatic;	// 動かせるかどうか
+	bool m_isMoveVecY;	// 縦軸に移動させるかどうかのフラグ
 };
 
 #endif
