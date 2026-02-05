@@ -1,35 +1,37 @@
-//========================================
+//=========================================================
 //
 // マップマネージャー処理 [ mapmanager.h ]
 // Author : Asuma Nishio
 //
-//========================================
+//=========================================================
 
-#ifndef _MAPMANAGER_H_ // このマクロ定義がされてなかったら
-#define _MAPMANAGER_H_ // 2重インクルード防止のマクロ定義
+//*********************************************************
+// インクルードガード
+//*********************************************************
+#pragma once
 
-//***************************
+//*********************************************************
 // インクルードファイル
-//***************************
+//*********************************************************
 #include "object.h"
 #include <vector>
 
-//***************************
+//*********************************************************
 // 前方宣言
-//***************************
+//*********************************************************
 class CMapObject;
 
-//***************************
-// マップマネージャークラス
-//***************************
+//*********************************************************
+// マップオブジェクトを管理するクラスを定義
+//*********************************************************
 class CMapManager : CObject
 {
 public:
-	// コンストラクタ・デストラクタ
+
 	CMapManager(int nPriority = static_cast<int>(CObject::PRIORITY::MODELOBJECT));
 	~CMapManager();
 
-	// メンバ関数
+
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
@@ -38,18 +40,14 @@ public:
 	void ClearObj(void);
 	void DeleteObj(CMapObject* pMapObject);
 
-	// ゲッター
-	CMapObject* GetInfo(const int nIdx) { return m_MapObj[nIdx]; } // 配列番号
-	std::vector<CMapObject*>& GetList(void) { return m_MapObj; } // オブジェクト本体
+	CMapObject* GetInfo(const int nIdx) { return m_MapObj[nIdx]; }
+	std::vector<CMapObject*>& GetList(void) { return m_MapObj; }
 
 	int GetSize() const { return static_cast<int>(m_MapObj.size()); }
 
-	// 静的メンバ関数
 	static CMapManager* Craete(void);
 
 private:
-	std::vector<CMapObject*>m_MapObj;
 
+	std::vector<CMapObject*>m_MapObj;	// マップオブジェクトの動的配列
 };
-
-#endif

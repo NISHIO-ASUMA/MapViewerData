@@ -1,13 +1,13 @@
-//================================================
+//=========================================================
 //
 // エディターシーン管理処理 [ editmanager.cpp ]
 // Author : Asuma Nishio
 //
-//================================================
+//=========================================================
 
-//**************************
-// インクルードファイル宣言
-//**************************
+//*********************************************************
+// インクルードファイル
+//*********************************************************
 #include "editmanager.h"
 #include "manager.h"
 #include "debugproc.h"
@@ -23,9 +23,9 @@
 #include "manager.h"
 #include "meshfield.h"
 
-//*******************************
+//*********************************************************
 // 名前空間
-//*******************************
+//*********************************************************
 namespace EDITINFO
 {
 	constexpr float MOVESPEED = 5.0f;
@@ -34,43 +34,44 @@ namespace EDITINFO
 	constexpr float VALUESIZE = 0.1f;
 };
 
-//*******************************
+//*********************************************************
 // jsonファイル形式を使用する
-//*******************************
+//*********************************************************
 using json = nlohmann::json;
 using ordered_json = nlohmann::ordered_json;
 
-//=============================
+//=========================================================
 // コンストラクタ
-//=============================
-CEditManager::CEditManager()
+//=========================================================
+CEditManager::CEditManager() : m_pMapManager(nullptr),
+m_pSelect(nullptr),
+m_pMeshField(nullptr),
+m_nTypeIdx(NULL),
+m_size(CLEARSIZE),
+m_pos(VECTOR3_NULL),
+m_rot(VECTOR3_NULL),
+m_nSelectIdx(-1),
+m_isStatic(false),
+m_isMoveVecY(false),
+m_FileList{}
 {
-	m_pMapManager = nullptr;
-	m_nTypeIdx = NULL;
-	m_size = CLEARSIZE;
-	m_pos = VECTOR3_NULL;
-	m_rot = VECTOR3_NULL;
-	m_nSelectIdx = -1;
-	m_FileList.clear();
-	m_pSelect = nullptr;
-	m_pMeshField = nullptr;
-	m_nColType = NULL;
-	m_nMassSet = NULL;
-	m_isStatic = false;
-	m_isMoveVecY = false;
+
 }
-//=============================
+//=========================================================
 // デストラクタ
-//=============================
+//=========================================================
 CEditManager::~CEditManager()
 {
 	// 無し
 }
-//=============================
+//=========================================================
 // 初期化処理
-//=============================
+//=========================================================
 HRESULT CEditManager::Init(void)
 {
+	// 配列クリア
+	m_FileList.clear();
+
 	// モデルリストを読み込み
 	CModelList::Load();
 
@@ -83,9 +84,9 @@ HRESULT CEditManager::Init(void)
 	// 初期化結果を返す
 	return S_OK;
 }
-//=============================
+//=========================================================
 // 終了処理
-//=============================
+//=========================================================
 void CEditManager::Uninit(void)
 {
 	// 破棄
@@ -94,9 +95,9 @@ void CEditManager::Uninit(void)
 	// クリア処理
 	m_FileList.clear();
 }
-//=============================
+//=========================================================
 // 更新処理
-//=============================
+//=========================================================
 void CEditManager::Update(void)
 {
 	// Gui作成
@@ -334,9 +335,9 @@ void CEditManager::Update(void)
 	// 終了
 	ImGui::End();
 
-//===============================
-// ショートカットキー
-//===============================
+	//---------------------------------
+	// ショートカットキー
+	//---------------------------------
 
 	// カメラ
 	CCamera* pCamera = CManager::GetCamera();
@@ -378,9 +379,9 @@ void CEditManager::Update(void)
 		m_nTypeIdx--;
 	}
 }
-//=============================
+//=========================================================
 // 描画処理
-//=============================
+//=========================================================
 void CEditManager::Draw(void)
 {
 	// デバイスポインタを宣言
@@ -445,7 +446,7 @@ void CEditManager::Draw(void)
 		}
 		else
 		{
-			pDevice->SetTexture(0, NULL); // テクスチャなし
+			pDevice->SetTexture(0, nullptr);
 		}
 
 		
@@ -456,10 +457,9 @@ void CEditManager::Draw(void)
 	// マテリアルを戻す
 	pDevice->SetMaterial(&matDef);
 }
-
-//=============================
+//=========================================================
 // 保存処理
-//=============================
+//=========================================================
 void CEditManager::Save(const char * pSaveName)
 {
 	// JSONオブジェクト
@@ -481,7 +481,6 @@ void CEditManager::Save(const char * pSaveName)
 		D3DXVECTOR3 pos = pObj->GetPos();
 		D3DXVECTOR3 rot = pObj->GetRot();
 		D3DXVECTOR3 scale = pObj->GetSize();
-		int nType = m_pMapManager->GetInfo(nCnt)->GetIdx();
 		bool isMove = m_pMapManager->GetInfo(nCnt)->getIsStatic();
 
 		// モデルファイルパスを取得
@@ -521,9 +520,9 @@ void CEditManager::Save(const char * pSaveName)
 	// 終了
 	ofs.close();
 }
-//=============================
+//=========================================================
 // 名前をつけて保存
-//=============================
+//=========================================================
 void CEditManager::SaveName(HWND hWnd)
 {
 	// クリア
@@ -547,9 +546,9 @@ void CEditManager::SaveName(HWND hWnd)
 		m_nSavePassIdx = static_cast<int>(m_FileList.size()) - 1;
 	}
 }
-//=============================
+//=========================================================
 // ダイアログ保存
-//=============================
+//=========================================================
 std::string CEditManager::ShowSaveFileDialog(HWND hWnd)
 {
 	char szFile[MAX_PATH] = { NULL };
@@ -583,9 +582,9 @@ std::string CEditManager::ShowSaveFileDialog(HWND hWnd)
 
 	return "";
 }
-//=============================
+//=========================================================
 // ダイアログ再読み込み処理
-//=============================
+//=========================================================
 std::string CEditManager::ShowReloadFileDialog(HWND hWnd)
 {
 	char szFile[MAX_PATH] = { NULL };
@@ -610,16 +609,16 @@ std::string CEditManager::ShowReloadFileDialog(HWND hWnd)
 
 	return "";
 }
-//=============================
+//=========================================================
 // 変換処理
-//=============================
+//=========================================================
 float CEditManager::Round(float fValue)
 {
 	return std::round(fValue * 100.0f) / 100.0f;
 }
-//=============================
+//=========================================================
 // ファイル再読み込み処理
-//=============================
+//=========================================================
 void CEditManager::Reload(void)
 {
 	// ロードされたパス
@@ -680,9 +679,9 @@ void CEditManager::Reload(void)
 		}
 	}	
 }
-//=============================
+//=========================================================
 // レイピッキング処理
-//=============================
+//=========================================================
 void CEditManager::ColisionRay(void)
 {
 	// 入れ物
@@ -697,7 +696,6 @@ void CEditManager::ColisionRay(void)
 	if (CManager::GetMouse()->GetTriggerDown(CInputMouse::MOUSE_LEFT))
 	{
 		// ヒットフラグ
-		bool isNoHit = false;
 		CMapObject* closest = nullptr;
 		float closestDist = FLT_MAX;
 
@@ -711,10 +709,6 @@ void CEditManager::ColisionRay(void)
 					closest = ite;
 					break;
 				}
-				//// 当たったらポインタセット
-				//m_pSelect = ite;
-				//isNoHit = true;
-				//break;
 			}
 		}
 
@@ -741,11 +735,7 @@ void CEditManager::ColisionRay(void)
 	if (m_pSelect != nullptr)
 	{
 		// 縦軸移動フラグ情報
-		if (ImGui::Button("VecMoveY_Set"))
-		{
-			m_isMoveVecY = m_isMoveVecY ? false : true;
-		}
-
+		ImGui::Checkbox("VecMoveY_Set", &m_isMoveVecY);
 
 		// 固定化されているかどうか
 		bool isStatic = m_pSelect->getIsStatic();
@@ -926,9 +916,9 @@ void CEditManager::ColisionRay(void)
 	// 終了
 	ImGui::End();
 }
-//============================
-// D&D
-//============================
+//=========================================================
+// ドラッグドロップ処理
+//=========================================================
 void CEditManager::ReloadFromPath(const std::string& path)
 {
 	if (path.empty()) return;

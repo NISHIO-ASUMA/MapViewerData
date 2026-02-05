@@ -1,49 +1,46 @@
-//====================================
+//=========================================================
 //
 // Xファイル処理 [ objectX.cpp ]
 // Author: Asuma Nishio
 //
-//=====================================
+//=========================================================
 
-//**********************
+//*********************************************************
 // インクルードファイル
-//**********************
+//*********************************************************
 #include "objectX.h"
 #include "manager.h"
 
-//=============================
+//=========================================================
 // コンストラクタ
-//=============================
-CObjectX::CObjectX(int nPriority) : CObject(nPriority)
+//=========================================================
+CObjectX::CObjectX(int nPriority) : CObject(nPriority),
+m_dwNumMat(NULL),
+m_mtxWorld{},
+m_nIdxTexture(-1),
+m_pBuffMat(nullptr),
+m_pMesh(nullptr),
+m_rot(VECTOR3_NULL),
+m_pos(VECTOR3_NULL),
+m_fsize(VECTOR3_NULL),
+m_Vtxmin(VECTOR3_NULL),
+m_Vtxmax(VECTOR3_NULL),
+m_Scale(CLEARSIZE),
+m_pTexture(nullptr),
+m_pFileName{}
 {
-	// 値のクリア
-	m_dwNumMat = NULL;
-	m_mtxWorld = {};
-	m_nIdxTexture = NULL;
-	m_pBuffMat = nullptr;
-	m_pMesh = nullptr;
-	m_pos = VECTOR3_NULL;
-	m_rot = VECTOR3_NULL;
-	m_fsize = VECTOR3_NULL;
-	m_Vtxmin = VECTOR3_NULL;
-	m_Vtxmax = VECTOR3_NULL;
-	m_Scale = CLEARSIZE;
 
-	m_pTexture = nullptr;
-	m_pFileName = {};
-
-	m_isUseQaut = false;
 }
-//=============================
+//=========================================================
 // デストラクタ
-//=============================
+//=========================================================
 CObjectX::~CObjectX()
 {
 	// 無し
 }
-//=============================
+//=========================================================
 // 初期化処理
-//=============================
+//=========================================================
 HRESULT CObjectX::Init(void)
 {
 	// デバイスポインタを宣言
@@ -155,9 +152,9 @@ HRESULT CObjectX::Init(void)
 	// 結果を返す
 	return S_OK;
 }
-//=============================
+//=========================================================
 // 終了処理
-//=============================
+//=========================================================
 void CObjectX::Uninit(void)
 {
 	// メッシュの破棄
@@ -187,16 +184,16 @@ void CObjectX::Uninit(void)
 	// オブジェクトの破棄
 	CObject::Release();
 }
-//=============================
+//=========================================================
 // 更新処理
-//=============================
+//=========================================================
 void CObjectX::Update(void)
 {
 	// 無し
 }
-//=============================
+//=========================================================
 // 描画処理
-//=============================
+//=========================================================
 void CObjectX::Draw(void)
 {
 	// デバイスポインタを宣言
@@ -252,7 +249,7 @@ void CObjectX::Draw(void)
 		}
 		else
 		{
-			pDevice->SetTexture(0, NULL); // テクスチャなし
+			pDevice->SetTexture(0, nullptr);
 		}
 
 		// モデル(パーツ)の描画
@@ -262,9 +259,9 @@ void CObjectX::Draw(void)
 	// マテリアルを戻す
 	pDevice->SetMaterial(&matDef);
 }
-//=============================
+//=========================================================
 // 生成処理
-//=============================
+//=========================================================
 CObjectX* CObjectX::Create(const char* pFileName,D3DXVECTOR3 pos)
 {
 	// インスタンス生成
@@ -277,17 +274,7 @@ CObjectX* CObjectX::Create(const char* pFileName,D3DXVECTOR3 pos)
 	pObjX->m_pFileName = pFileName;
 
 	// 初期化処理
-	if (FAILED(pObjX->Init()))
-	{
-		// 破棄
-		delete pObjX;
-
-		// nullptr代入
-		pObjX = nullptr;
-
-		// nullptrを返す
-		return nullptr;
-	}
+	if (FAILED(pObjX->Init())) return nullptr;
 
 	// ポインタを返す
 	return pObjX;

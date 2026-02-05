@@ -1,24 +1,27 @@
-//=====================================
+//=========================================================
 //
 // 2Dオブジェクト処理 [ object2D.h ]
 // Author: Asuma Nishio
 //
-//=====================================
+//=========================================================
 
-#ifndef _OBJECT2D_H_ // このマクロ定義がされてなかったら
-#define _OBJECT2D_H_ // 2重インクルード防止のマクロ定義
+//*********************************************************
+// インクルードガード
+//*********************************************************
+#pragma once
 
-//**********************
+//*********************************************************
 // インクルードファイル
-//**********************
+//*********************************************************
 #include "object.h"
 
-//****************************
+//*********************************************************
 // オブジェクト2Dクラスを定義
-//****************************
+//*********************************************************
 class CObject2D : public CObject
 {
 public:
+
 	//****************************
 	// アンカーポイントタイプ
 	//****************************
@@ -41,20 +44,15 @@ public:
 		DRAWTYPE_MAX,
 	};
 
-	// コンストラクタ・デストラクタ
 	CObject2D(int nPriority = static_cast<int>(CObject::PRIORITY::UI));
 	~CObject2D();
 
-	// メンバ関数
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-
-	// 静的メンバ関数
 	static CObject2D* Create(void);
 
-	// セッター
 	void SetUV(float TexU, float TexV);
 	void SetCol(D3DXCOLOR col) { m_col = col; }
 	void SetPos(D3DXVECTOR3 pos) { m_Pos = pos; }
@@ -70,17 +68,15 @@ public:
 	void SetRight(void);
 	void SetTexture(const char* pRegisterName);
 
-	// ゲッター
-	D3DXVECTOR3 GetPos(void) { return m_Pos; }	// 現在の座標を取得
-	D3DXVECTOR3 GetRot(void) { return m_Rot; }	// 現在の角度を取得
-	D3DXCOLOR GetCol(void) { return m_col; }	// 現在の色を取得
+	D3DXVECTOR3 GetPos(void) { return m_Pos; }
+	D3DXVECTOR3 GetRot(void) { return m_Rot; }
+	D3DXCOLOR GetCol(void) { return m_col; }
 	float GetWidth(void) { return m_fWidth; }
 	float GetHeight(void) { return m_fHeight; }
 	int GetDrawType(void) { return m_nDrawType; }
 
 private:
 
-	LPDIRECT3DTEXTURE9 m_pTexture;		// テクスチャポインタ
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff; // 頂点バッファのポインタ
 
 	D3DXVECTOR3 m_Rot;	// 角度情報
@@ -92,7 +88,5 @@ private:
 	int m_nDrawType;	// 描画タイプ
 	float m_fWidth;		// 横幅
 	float m_fHeight;	// 高さ
-	int m_nIdxTexture; // テクスチャインデックス
+	int m_nIdxTexture;	// テクスチャインデックス
 };
-
-#endif

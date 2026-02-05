@@ -1,48 +1,31 @@
-//=====================================
+//=========================================================
 //
 // カメラ処理 [ camera.h ]
 // Author: Asuma Nishio
 //
-//=====================================
+//=========================================================
 
-#ifndef _CAMERA_H_ // このマクロ定義がされてなかったら
-#define _CAMERA_H_ // 2重インクルード防止のマクロ定義
+//********************************************************
+// インクルードガード
+//********************************************************
+#pragma once 
 
-//**********************
+//********************************************************
 // 前方宣言
-//**********************
+//********************************************************
 class CInputMouse;
 class CInputKeyboard;
 
-//**********************
+//********************************************************
 // カメラクラスを定義
-//**********************
+//********************************************************
 class CCamera
 {
 public:
-	//**********************
-	// カメラモード列挙型
-	//**********************
-	enum MODE
-	{
-		MODE_NONE,
-		MODE_PLAYER,
-		MODE_LOCKON,
-		MODE_MOUSE,
-		MODE_SHAKE,
-		MODE_EVENT,
-		MODE_ANIM,
-		MODE_MAIN,
-		MODE_SUB,
-		MODE_MAX
-	
-	};
 
-	// コンストラクタ・デストラクタ
 	CCamera();
 	~CCamera();
 
-	// メンバ関数
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
@@ -50,10 +33,8 @@ public:
 	void MouseView(CInputMouse* pMouse, CInputKeyboard* pInput);
 	void WheelMouse(int nDelta);
 
-	// セッター
 	void SetCameraMode(int nMode) { m_pCamera.nMode = nMode; }
 
-	// ゲッター
 	D3DXVECTOR3 GetRot(void) { return m_pCamera.rot; }
 	D3DXVECTOR3 GetPos(void) { return m_pCamera.posV; }
 	D3DXVECTOR3 GetPosR(void) { return m_pCamera.posR; }
@@ -82,7 +63,5 @@ private:
 	};
 
 	Camera m_pCamera;		// カメラ構造体変数
-	D3DXVECTOR3 m_Zoom;		// ズーム
+	D3DXVECTOR3 m_Zoom;		// ズーム値
 };
-
-#endif

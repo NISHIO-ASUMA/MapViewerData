@@ -1,55 +1,51 @@
-//=============================================
+//=========================================================
 //
 // メッシュフィールド処理 [ meshfield.cpp ]
 // Author: Asuma Nishio
 //
-//=============================================
+//=========================================================
 
-//**********************
+//*********************************************************
 // インクルードファイル
-//**********************
+//*********************************************************
 #include "meshfield.h"
 #include "manager.h"
 #include "texture.h"
 
-//============================================
+//=========================================================
 // コンストラクタ
-//============================================
-CMeshField::CMeshField(int nPrio) : CObject(nPrio)
+//=========================================================
+CMeshField::CMeshField(int nPriority) : CObject(nPriority),
+m_pIdx(nullptr),
+m_pVtx(nullptr),
+m_pos(VECTOR3_NULL),
+m_rot(VECTOR3_NULL),
+m_mtxWorld{},
+m_nNumAllVtx(NULL),
+m_fRadius(NULL),
+m_nNumIdx(NULL),
+m_nNumPrimitive(NULL),
+m_nTexIdx(NULL),
+m_nNumX(NULL),
+m_nNumZ(NULL),
+m_fRadiusZ(NULL)
 {
-	// 値のクリア処理
-	m_pIdx = nullptr;
-	m_pVtx = nullptr;
 
-	m_pos = VECTOR3_NULL;
-	m_rot = VECTOR3_NULL;
-	m_mtxWorld = {};
-	m_fRadius = NULL;
-	m_nNumAllVtx = 0;
-	m_nNumIdx = 0;
-	m_nNumPrimitive = 0;
-	m_nTexIdx = NULL;
-
-	m_nNumX = NULL;
-	m_nNumZ = NULL;
-	m_fRadiusZ = NULL;
 }
-//============================================
+//=========================================================
 // デストラクタ
-//============================================
+//=========================================================
 CMeshField::~CMeshField()
 {
 	// 無し
 }
-//============================================
+//=========================================================
 // 生成処理
-//============================================
+//=========================================================
 CMeshField* CMeshField::Create(D3DXVECTOR3 pos, float fRadiusX, float fRadiusZ, int nNumX, int nNumZ)
 {
 	// インスタンス生成
 	CMeshField* pMeshField = new CMeshField;
-
-	// nullptrだったら
 	if (pMeshField == nullptr) return nullptr;
 
 	// オブジェクト設定
@@ -59,33 +55,15 @@ CMeshField* CMeshField::Create(D3DXVECTOR3 pos, float fRadiusX, float fRadiusZ, 
 	pMeshField->m_nNumX = nNumX;
 	pMeshField->m_nNumZ = nNumZ;
 
-	// テクスチャ設定
-	pMeshField->SetTexture();
-
 	// 初期化失敗時
-	if (FAILED(pMeshField->Init()))
-	{
-		// nullポインタを返す
-		return nullptr;
-	}
+	if (FAILED(pMeshField->Init())) return nullptr;
 
 	// 生成されたポインタを返す
 	return pMeshField;
 }
-//============================================
-// テクスチャ設定
-//============================================
-void CMeshField::SetTexture(void)
-{
-	// テクスチャポインタ取得
-	CTexture* pTexture = CManager::GetTexture();
-
-	// 割り当て
-	m_nTexIdx = pTexture->Register("data/TEXTURE/field100.jpg");
-}
-//============================================
+//=========================================================
 // 初期化処理
-//============================================
+//=========================================================
 HRESULT CMeshField::Init(void)
 {
 	// デバイスのポインタ
@@ -195,9 +173,9 @@ HRESULT CMeshField::Init(void)
 
 	return S_OK;
 }
-//============================================
+//=========================================================
 // 終了処理
-//============================================
+//=========================================================
 void CMeshField::Uninit(void)
 {
 	// 頂点バッファの解放
@@ -217,9 +195,9 @@ void CMeshField::Uninit(void)
 	// 自身の破棄
 	CObject::Release();
 }
-//============================================
+//=========================================================
 // 更新処理
-//============================================
+//=========================================================
 void CMeshField::Update(void)
 {
 	// 頂点情報のポインタを宣言
@@ -272,10 +250,8 @@ void CMeshField::Update(void)
 	// インデックスバッファのロック
 	m_pIdx->Lock(0, 0, (void**)&pIdx, 0);
 
-	WORD IndxNum = m_nNumX + 1;// X
-
-	WORD IdxCnt = 0;// 配列
-
+	WORD IndxNum = m_nNumX + 1;
+	WORD IdxCnt = 0;
 	WORD Num = 0;
 
 	// インデックスの設定
@@ -300,9 +276,9 @@ void CMeshField::Update(void)
 	// インデックスバッファのアンロック
 	m_pIdx->Unlock();
 }
-//============================================
+//=========================================================
 // 描画処理
-//============================================
+//=========================================================
 void CMeshField::Draw(void)
 {
 	// デバイスのポインタ
@@ -310,12 +286,6 @@ void CMeshField::Draw(void)
 
 	// 計算用のマトリックスを宣言
 	D3DXMATRIX mtxRot, mtxTrans;
-
-	//// テクスチャポインタ取得
-	//CTexture* pTexture = CManager::GetTexture();
-
-	//// セット
-	//pDevice->SetTexture(0, pTexture->GetAddress(m_nTexIdx));
 
 	// ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
@@ -345,7 +315,4 @@ void CMeshField::Draw(void)
 
 	// テクスチャを戻す
 	pDevice->SetTexture(0, NULL);
-
-	CDebugproc::Print("座標 [ %.2f,%.2f,%.2f ]",m_pos.x,m_pos.y,m_pos.z);
-	CDebugproc::Draw(0, 20);
 }

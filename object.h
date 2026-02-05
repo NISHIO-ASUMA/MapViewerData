@@ -1,19 +1,22 @@
-//====================================
+//=========================================================
 //
 // オブジェクト処理 [ object.h ]
 // Author: Asuma Nishio
 //
-//=====================================
+//=========================================================
 
-#ifndef _OBJECT_H_ // このマクロ定義がされてなかったら
-#define _OBJECT_H_ // 2重インクルード防止のマクロ定義
+//*********************************************************
+// インクルードガード
+//*********************************************************
+#pragma once
 
-//***************************
+//*********************************************************
 // オブジェクトクラスを定義
-//***************************
+//*********************************************************
 class CObject
 {
 public:
+
 	//*************************
 	// オブジェクトの種類定義
 	//*************************
@@ -55,34 +58,29 @@ public:
 		PRIORITY_MAX // 最大数
 	};
 
-	// コンストラクタ・デストラクタ
 	CObject(int nPriority = NONE);
 	virtual ~CObject();
 
-	// 純粋仮想関数
 	virtual HRESULT Init(void) = 0;
 	virtual void Uninit(void) = 0;
 	virtual void Update(void) = 0;
 	virtual void Draw(void) = 0;
 
-	// 静的メンバ関数
 	static void ReleaseAll(void);
 	static void UpdateAll(void);
 	static void DrawAll(void);
-	static CObject* GetTop(int nPriority) { return m_pTop[nPriority]; }	// 先頭取得
+	static CObject* GetTop(int nPriority) { return m_pTop[nPriority]; }
 	static int GetNumAll(void) { return m_nNumAll; }
 
-	// セッター
 	void SetObjType(TYPE type) { m_Type = type; }
 
-	// ゲッター
 	TYPE GetObjType(void) { return m_Type; }
 	CObject* GetNext(void) { return m_pNext; }
 
 protected:
-	void Release(void); // 解放
-
+	void Release(void);			// 解放処理
 private:
+
 	static int m_nNumAll;		// 総数管理
 	int m_nID;					// 自分自身のID
 	TYPE m_Type;				// オブジェクトの種類変数
@@ -96,5 +94,3 @@ private:
 
 	bool m_isDeath;			// 死亡フラグ
 };
-
-#endif

@@ -1,49 +1,46 @@
-//=====================================
+//=========================================================
 //
 // マネージャー処理 [ manager.cpp ]
 // Author: Asuma Nishio
 //
-//=====================================
+//=========================================================
 
-//**************************
-// インクルードファイル宣言
-//**************************
+//*********************************************************
+// インクルードファイル
+//*********************************************************
 #include "manager.h"
-#include "title.h"
-#include "game.h"
 #include "edit.h"
 
-//**************************
+//*********************************************************
 // 静的メンバ変数宣言
-//**************************
-CRenderer* CManager::m_pRenderer = nullptr;				// レンダラーへのポインタ
-CInputKeyboard* CManager::m_pInputKeyboard = nullptr;	// キーボードへのポインタ
+//*********************************************************
+CRenderer* CManager::m_pRenderer = nullptr;				// レンダラークラスへのポインタ
+CInputKeyboard* CManager::m_pInputKeyboard = nullptr;	// キーボードクラスへのポインタ
 CJoyPad* CManager::m_pJoyPad = nullptr;					// ジョイパッドクラスへのポインタ
-CSound* CManager::m_pSound = nullptr;					// サウンドへのポインタ
-CInputMouse* CManager::m_pInputMouse = nullptr;			// マウスへのポインタ
+CInputMouse* CManager::m_pInputMouse = nullptr;			// マウスクラスへのポインタ
 CTexture* CManager::m_pTexture = nullptr;				// テクスチャクラスへのポインタ
 CCamera* CManager::m_pCamera = nullptr;					// カメラクラスへのポインタ
 CLight* CManager::m_pLight = nullptr;					// ライトクラスへのポインタ
 CScene* CManager::m_pScene = nullptr;					// シーンクラスへのポインタ
 CFade* CManager::m_pFade = nullptr;						// フェードクラスへのポインタ
 
-//===========================
+//=========================================================
 // コンストラクタ
-//===========================
+//=========================================================
 CManager::CManager()
 {
 	// 無し
 }
-//===========================
+//=========================================================
 // デストラクタ
-//===========================
+//=========================================================
 CManager::~CManager()
 {
 	// 無し
 }
-//===========================
+//=========================================================
 // マネージャーの初期化処理
-//===========================
+//=========================================================
 HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 {
 	// キーボードオブジェクトの生成処理
@@ -71,15 +68,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 
 	// 初期化に失敗したら
 	if (FAILED(m_pInputMouse->Init(hInstance, hWnd)))
-	{
-		// -1を返す
-		return -1;
-	}
-
-	// サウンドの生成処理
-	m_pSound = new CSound;
-
-	if (FAILED(m_pSound->Init(hWnd)))
 	{
 		// -1を返す
 		return -1;
@@ -131,20 +119,14 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// テクスチャ全読み込み
 	m_pTexture->Load();
 
-#ifdef _DEBUG
-	// シーンセット
+	// 初期シーンセット
 	m_pFade->SetFade(new CEdit());
-#else
-	// シーンセット
-	m_pFade->SetFade(new CEdit());
-
-#endif // _DEBUG
 
 	return S_OK;
 }
-//===========================
+//=========================================================
 // マネージャーの終了処理
-//===========================
+//=========================================================
 void CManager::Uninit(void)
 {
 	// 全オブジェクトの破棄
@@ -187,19 +169,6 @@ void CManager::Uninit(void)
 
 		// nullptrにする
 		m_pInputMouse = nullptr;
-	}
-
-	// サウンド情報の破棄
-	if (m_pSound != nullptr)
-	{
-		// サウンドの終了処理
-		m_pSound->Uninit();
-
-		// サウンドの破棄
-		delete m_pSound;
-
-		// nullptrにする
-		m_pSound = nullptr;
 	}
 
 	// カメラの破棄
@@ -280,9 +249,9 @@ void CManager::Uninit(void)
 		m_pRenderer = nullptr;
 	}
 }
-//===========================
+//=========================================================
 // マネージャーの更新処理
-//===========================
+//=========================================================
 void CManager::Update()
 {
 	// キーボードの更新処理
@@ -313,18 +282,18 @@ void CManager::Update()
 	// レンダラーの更新処理
 	m_pRenderer->Update();
 }
-//===========================
+//=========================================================
 // マネージャーの描画処理
-//===========================
+//=========================================================
 void CManager::Draw(void)
 {
 	// レンダラーの描画処理
 	m_pRenderer->Draw();
 }
 
-//===========================
+//=========================================================
 // シーンのセット
-//===========================
+//=========================================================
 void CManager::SetScene(CScene * pNewscene)
 {
 	// nullptrじゃない
@@ -338,13 +307,6 @@ void CManager::SetScene(CScene * pNewscene)
 
 		// nullptrにする
 		m_pScene = nullptr;
-
-		// nullじゃない
-		if (m_pSound)
-		{
-			// サウンドの停止
-			m_pSound->StopSound();
-		}
 
 		// 全オブジェクト破棄
 		CObject::ReleaseAll();
@@ -370,9 +332,9 @@ void CManager::SetScene(CScene * pNewscene)
 		}
 	}
 }
-//===========================
+//=========================================================
 // 現在シーン取得
-//===========================
+//=========================================================
 CScene::MODE CManager::GetScene(void)
 {
 	// nullptrじゃない

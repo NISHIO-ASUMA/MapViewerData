@@ -1,37 +1,38 @@
-//============================================
+//=========================================================
 //
 // エディターシーン管理処理 [ editmanager.h ]
 // Author : Asuma Nishio
 //
-//============================================
+//=========================================================
 
-#ifndef _EDITMANAGER_H_ // このマクロ定義がされてなかったら
-#define _EDITMANAGER_H_ // 2重インクルード防止のマクロ定義
+//*********************************************************
+// インクルードガード
+//*********************************************************
+#pragma once 
 
-//**********************************
+//*********************************************************
 // インクルードファイル
-//**********************************
+//*********************************************************
 #include "modellist.h"
 #include <string>
 
-//**********************************
+//*********************************************************
 // 前方宣言
-//**********************************
+//*********************************************************
 class CMapManager;
 class CMapObject;
 class CMeshField;
 
-//**********************************
+//*********************************************************
 // エディター管理クラスを定義
-//**********************************
+//*********************************************************
 class CEditManager
 {
 public:
-	// コンストラクタ・デストラクタ
+
 	CEditManager();
 	~CEditManager();
 
-	// メンバ関数
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
@@ -42,20 +43,18 @@ public:
 	void ColisionRay(void);
 	void ReloadFromPath(const std::string& path);
 
-	// セッター
 	D3DXVECTOR3 SetPos(D3DXVECTOR3 pos) { m_pos = pos; }
 	D3DXVECTOR3 SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
 	D3DXVECTOR3 SetSize(D3DXVECTOR3 size) { m_size = size; }
-	// ゲッター
+
 	D3DXVECTOR3 GetPos() const { return m_pos; }
 	D3DXVECTOR3 GetRot() const { return m_rot; }
 	D3DXVECTOR3 GetSIze() const { return m_size; }
 
 private:
 
-	// 格納関数
-	std::string ShowSaveFileDialog(HWND hWnd); // ダイアログ保存関数
-	std::string ShowReloadFileDialog(HWND hWnd); // ダイアログ再読み込み関数
+	std::string ShowSaveFileDialog(HWND hWnd);
+	std::string ShowReloadFileDialog(HWND hWnd);
 	float Round(float fValue);
 
 	//*******************************
@@ -76,17 +75,12 @@ private:
 
 	CMapManager* m_pMapManager; // マネージャーポインタ
 	CMapObject* m_pSelect;		// 選択中オブジェクト
-	CMeshField* m_pMeshField;	// メッシュフィールド
+	CMeshField* m_pMeshField;	// メッシュフィールドのポインタ
 
 	int m_nTypeIdx;		// 種類インデックス
 	int m_nSelectIndex; // 選択中オブジェクトのインデックス
 	int m_nSavePassIdx; // セーブファイルパスインデックス
 	int m_nSelectIdx;	// 選択中のオブジェクト番号
-
-	int m_nColType;		// 識別色の種類
-	int m_nMassSet;		// 重さの識別番号
 	bool m_isStatic;	// 動かせるかどうか
 	bool m_isMoveVecY;	// 縦軸に移動させるかどうかのフラグ
 };
-
-#endif

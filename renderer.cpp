@@ -1,13 +1,13 @@
-//=====================================
+//=========================================================
 //
 // レンダリング処理 [ renderer.cpp ]
 // Author: Asuma Nishio
 //
-//=====================================
+//=========================================================
 
-//****************************
-// インクルードファイル宣言
-//****************************
+//*********************************************************
+// インクルードファイル
+//*********************************************************
 #include "renderer.h"
 #include "object.h"
 #include "object2D.h"
@@ -16,47 +16,33 @@
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx9.h"
 
-//******************************************
+//*********************************************************
 // 静的メンバ変数宣言
-//******************************************
+//*********************************************************
 CDebugproc* CRenderer::m_pDebug = nullptr;	// デバッグプロセスへのポインタ
 int CRenderer::m_fps = 0;					// FPSカウント
 
-//===============================
+//=========================================================
 // コンストラクタ
-//===============================
-CRenderer::CRenderer()
+//=========================================================
+CRenderer::CRenderer() : m_pD3D(nullptr),
+m_pD3DDevice(nullptr),
+m_pImguiManager(nullptr),
+m_backCol(COLOR_BLACK),
+m_isActive(false)
 {
-	// 値のクリア
-	m_pD3D = nullptr;
-	m_pD3DDevice = nullptr;
-	m_pZBuffMT = nullptr;
-	m_pRenderDef = nullptr;
-	m_pZBuffDef = nullptr;
-	m_pImguiManager = nullptr;
-	m_isbuller = false;
 
-	for (int nCnt = 0; nCnt < NUM_FEEDBACKPOLYGON; nCnt++)
-	{
-		m_apRenderMT[nCnt] = nullptr;
-		m_apTextureMT[nCnt] = nullptr;
-	}
-
-	m_pVtxMT = nullptr;
-	m_nBullerTime = NULL;
-	m_backCol = COLOR_BLACK;
-	m_isActive = false;
 }
-//===============================
+//=========================================================
 // デストラクタ
-//===============================
+//=========================================================
 CRenderer::~CRenderer()
 {
 	// 無し
 }
-//===============================
+//=========================================================
 // レンダラー初期化処理
-//===============================
+//=========================================================
 HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 {
 	// ディスプレイモード
@@ -139,15 +125,12 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	m_pDebug = new CDebugproc;
 	m_pDebug->Init();
 
-	// メンバ変数
-	m_nBullerTime = NULL;
-
 	// 初期化結果を返す
 	return S_OK;
 }
-//===============================
+//=========================================================
 // レンダラー終了処理
-//===============================
+//=========================================================
 void CRenderer::Uninit(void)
 {
 	if (m_pDebug != nullptr)
@@ -160,38 +143,6 @@ void CRenderer::Uninit(void)
 
 	// 全オブジェクト破棄
 	CObject::ReleaseAll();
-
-	// マルチレンダリングターゲット用Zバッファの破棄
-	if (m_pZBuffMT != nullptr)
-	{
-		m_pZBuffMT->Release();
-		m_pZBuffMT = nullptr;
-	}
-
-	// 頂点バッファの破棄
-	if (m_pVtxMT != nullptr)
-	{
-		m_pVtxMT->Release();
-		m_pVtxMT = nullptr;
-	}
-
-	// 作成数分破棄
-	for (int nCnt = 0; nCnt < NUM_FEEDBACKPOLYGON; nCnt++)
-	{
-		// テクスチャ破棄
-		if (m_apTextureMT[nCnt] != nullptr)
-		{
-			m_apTextureMT[nCnt]->Release();
-			m_apTextureMT[nCnt] = nullptr;
-		}
-
-		// レンダー破棄
-		if (m_apRenderMT[nCnt] != nullptr)
-		{
-			m_apRenderMT[nCnt]->Release();
-			m_apRenderMT[nCnt] = nullptr;
-		}
-	}
 
 	// Direct3Dデバイスの破棄
 	if (m_pD3DDevice != nullptr)
@@ -207,9 +158,9 @@ void CRenderer::Uninit(void)
 		m_pD3D = nullptr;
 	}
 }
-//===============================
+//=========================================================
 // レンダラー更新処理
-//===============================
+//=========================================================
 void CRenderer::Update(void)
 {
 	// キーボードのポインタ
@@ -235,9 +186,9 @@ void CRenderer::Update(void)
 
 	if (m_pImguiManager == nullptr) return;
 }
-//===============================
+//=========================================================
 // レンダラー描画処理
-//===============================
+//=========================================================
 void CRenderer::Draw(void)
 {
 	// 画面クリア(バックバッファ&Zバッファ&ステンシルバッファのクリア)
@@ -275,58 +226,9 @@ void CRenderer::Draw(void)
 	// バックバッファとフロントバッファの入れ替え
 	m_pD3DDevice->Present(nullptr, nullptr, nullptr, nullptr);
 }
-//===============================
-// レンダーターゲット変更関数
-//===============================
-void CRenderer::ChangeTarget(D3DXVECTOR3 posV, D3DXVECTOR3 posR, D3DXVECTOR3 vecU)
-{
-	// マトリックス変数
-	D3DXMATRIX mtxprojection, mtxview;
-
-	// アスペクト比計算用
-	float fAsepct = NULL;
-
-	// レンダリングターゲットを設定
-	m_pD3DDevice->SetRenderTarget(0, m_apRenderMT[0]);
-
-	// Zバッファを設定
-	m_pD3DDevice->SetDepthStencilSurface(m_pZBuffMT);
-
-	// ビューポートを設定
-	m_pD3DDevice->SetViewport(&m_viewportMT);
-
-	// ビューマトリックスの初期化
-	D3DXMatrixIdentity(&mtxview);
-
-	// ビューマトリックスの作成
-	D3DXMatrixLookAtLH(&mtxview,
-		&posV,
-		&posR,
-		&vecU);
-
-	// ビューマトリックスの設定
-	m_pD3DDevice->SetTransform(D3DTS_VIEW, &mtxview);
-
-	// プロジェクションマトリックスの初期化
-	D3DXMatrixIdentity(&mtxprojection);
-
-	// アスペクト比の設定
-	fAsepct = (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT;
-
-	// プロジェクションマトリックスの作成
-	D3DXMatrixPerspectiveFovLH(&mtxprojection,
-		D3DXToRadian(45.0f),
-		fAsepct,
-		10.0f,
-		3000.0f);
-
-	// プロジェクションマトリックスの設定
-	m_pD3DDevice->SetTransform(D3DTS_PROJECTION, &mtxprojection);
-}
-
-//===============================
+//=========================================================
 // リセットが必要なら
-//===============================
+//=========================================================
 bool CRenderer::NeedReset(void)
 {
 	// 両方0なら
@@ -339,20 +241,9 @@ bool CRenderer::NeedReset(void)
 		return false;
 	}
 }
-
-//===============================
-// ブラーの設定
-//===============================
-void CRenderer::SetBuller(bool isBuller, const int nMaxbullerTime)
-{
-	// 値を設定
-	m_isbuller = isBuller;
-	m_nBullerTime = nMaxbullerTime;
-}
-
-//===============================
+//=========================================================
 // デバイス生成処理
-//===============================
+//=========================================================
 void CRenderer::ResetDevice(void)
 {
 	// 例外処理
@@ -401,40 +292,60 @@ void CRenderer::ResetDevice(void)
 	CLight* pLight = CManager::GetLight();
 	pLight->Init();
 }
+//=========================================================
+// バックバッファのカラー設定
+//=========================================================
+void CRenderer::SetBackColor(float r, float g, float b, float a)
+{
+	m_backCol.r = r,
+	m_backCol.g = g,
+	m_backCol.b = b,
+	m_backCol.a = a;
+}
+//=========================================================
+// Guiポインタを取得
+//=========================================================
+void CRenderer::SetGuiManager(CImguiManager* pGui, HWND hwnd)
+{
+	// ポインタ取得
+	m_pImguiManager = pGui;
 
-//===============================
+	// 初期化
+	m_pImguiManager->Init(hwnd, m_pD3DDevice);
+}
+//=========================================================
 // デバイス取得処理
-//===============================
+//=========================================================
 LPDIRECT3DDEVICE9 CRenderer::GetDevice(void)
 {
 	// デバイスを返す
 	return m_pD3DDevice;
 }
-//===============================
+//=========================================================
 // FPS表示
-//===============================
+//=========================================================
 void CRenderer::GetFps(int nFps)
 {
 	// 代入
 	m_fps = nFps;
 }
-//===============================
+//=========================================================
 // ワイヤーフレーム起動
-//===============================
+//=========================================================
 void CRenderer::OnWireFrame()
 {
 	m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 }
-//===============================
+//=========================================================
 // ワイヤーフレーム終了
-//===============================
+//=========================================================
 void CRenderer::OffWireFrame()
 {
 	m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 }
-//===============================
-// システムウィンドウ
-//===============================
+//=========================================================
+// システムウィンドウGui更新処理
+//=========================================================
 void CRenderer::UpdateGui(void)
 {
 	// アクティブなら

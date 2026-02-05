@@ -1,55 +1,49 @@
-//================================================
+//=========================================================
 //
 // マップに出すオブジェクト処理 [ mapobject.cpp ]
 // Author: Asuma Nishio
 //
-//================================================
+//=========================================================
 
-//******************************
+//*********************************************************
 // インクルードファイル
-//******************************
+//*********************************************************
 #include "mapobject.h"
 #include "manager.h"
 #include "modellist.h"
 #include "editmanager.h"
 
-//=========================
+//=========================================================
 // コンストラクタ
-//=========================
-CMapObject::CMapObject(int nPriority) : CObject(nPriority)
+//=========================================================
+CMapObject::CMapObject(int nPriority) : CObject(nPriority),
+m_pos(VECTOR3_NULL),
+m_rot(VECTOR3_NULL),
+m_size(CLEARSIZE),
+m_mtxworld{},
+m_nTypeIdx(NULL),
+m_isStatic(false)
 {
-	m_pos = VECTOR3_NULL;
-	m_rot = VECTOR3_NULL;
-	m_mtxworld = {};
-	m_nTypeIdx = NULL;
-	m_size = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
-	m_nColorType = NULL;
-	MassType  = NULL;
-	m_isStatic = false;
+
 }
-//=========================
+//=========================================================
 // デストラクタ
-//=========================
+//=========================================================
 CMapObject::~CMapObject()
 {
 	// 無し
 }
-//=========================
-// 生成
-//=========================
+//=========================================================
+// 生成処理
+//=========================================================
 CMapObject* CMapObject::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot,D3DXVECTOR3 scale, int nIdx,bool isflags)
 {
 	// インスタンス生成
 	CMapObject* pMapObject = new CMapObject;
-
-	// nullなら
 	if (pMapObject == nullptr) return nullptr;
 
 	// 初期化失敗時
-	if (FAILED(pMapObject->Init()))
-	{
-		return nullptr;
-	}
+	if (FAILED(pMapObject->Init())) return nullptr;
 
 	// セット
 	pMapObject->m_pos = pos;
@@ -61,9 +55,9 @@ CMapObject* CMapObject::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot,D3DXVECTOR3 scal
 	// 生成されたポインタを返す
 	return pMapObject;
 }
-//=========================
-// 初期化
-//=========================
+//=========================================================
+// 初期化処理
+//=========================================================
 HRESULT CMapObject::Init(void)
 {
 	// 値の初期化
@@ -71,30 +65,28 @@ HRESULT CMapObject::Init(void)
 	m_rot = VECTOR3_NULL;
 	m_mtxworld = {};
 	m_nTypeIdx = -1;
-	m_nColorType = NULL;
-	MassType = NULL;
 	m_isStatic = false;
 
 	return S_OK;
 }
-//=========================
-// 終了
-//=========================
+//=========================================================
+// 終了処理
+//=========================================================
 void CMapObject::Uninit(void)
 {
 	// 自身の破棄
 	CObject::Release();
 }
-//=========================
-// 更新
-//=========================
+//=========================================================
+// 更新処理
+//=========================================================
 void CMapObject::Update(void)
 {
 	// 無し
 }
-//=========================
-// 描画
-//=========================
+//=========================================================
+// 描画処理
+//=========================================================
 void CMapObject::Draw(void)
 {
 	// 番号がnull
@@ -166,9 +158,9 @@ void CMapObject::Draw(void)
 	// マテリアルを戻す
 	pDevice->SetMaterial(&matDef);
 }
-//===========================
-// マウスヒット
-//===========================
+//=========================================================
+// マウスヒット関数
+//=========================================================
 bool CMapObject::CollisionMouse(float* Distance)
 {
 	// 距離初期化
@@ -223,4 +215,3 @@ bool CMapObject::CollisionMouse(float* Distance)
 
 	return false;
 }
-
