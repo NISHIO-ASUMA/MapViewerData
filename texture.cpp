@@ -120,11 +120,11 @@ HRESULT CTexture::LoadFile(void)
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 
 	// 開くファイルを設定
-	std::ifstream openfile ("data\\Loader\\TextureFile.txt");
+	std::ifstream openfile ("data/Loader/TextureFile.txt");
 
 	if (!openfile)
 	{
-		MessageBox(NULL, "ファイルオープン失敗", "data\\Loader\\TextureFile.txt", MB_OK);
+		MessageBox(NULL, "ファイルオープン失敗", "data/Loader/TextureFile.txt", MB_OK);
 
 		return E_FAIL;
 	}

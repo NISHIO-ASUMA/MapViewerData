@@ -46,5 +46,5 @@ public:
 
 private:
 	static std::vector<MODELINFO>m_ModelInfo;								// 動的配列
-	static constexpr const char* MODELLIST = "data\\Loader\\ModelFile.txt"; // ファイルパス
+	static constexpr const char* MODELLIST = "data/Loader/ModelFile.txt"; // ファイルパス
 };

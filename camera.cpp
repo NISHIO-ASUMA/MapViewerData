@@ -149,7 +149,7 @@ void CCamera::SetCamera(void)
 void CCamera::MouseView(CInputMouse * pMouse,CInputKeyboard * pInput)
 {
 	// 左クリック
-	if (pMouse->GetPress(CInputMouse::MOUSE_LEFT) && pInput->GetPress(DIK_LSHIFT))
+	if (pMouse->GetPress(CInputMouse::MOUSE_LEFT) && pInput->GetPress(DIK_LALT))
 	{
 		// マウスの移動量取得
 		D3DXVECTOR2 Move = pMouse->GetMouseVelocity();
@@ -178,7 +178,7 @@ void CCamera::MouseView(CInputMouse * pMouse,CInputKeyboard * pInput)
 		m_pCamera.posV.z = m_pCamera.posR.z - sinf(m_pCamera.rot.x) * cosf(m_pCamera.rot.y) * m_pCamera.fDistance;
 	}
 	// 右クリック
-	else if (pMouse->GetPress(CInputMouse::MOUSE_RIGHT) && pInput->GetPress(DIK_LSHIFT))
+	else if (pMouse->GetPress(CInputMouse::MOUSE_RIGHT) && pInput->GetPress(DIK_LALT))
 	{
 		D3DXVECTOR2 Move = pMouse->GetMouseVelocity();
 		D3DXVECTOR2 MoveOld = pMouse->GetMouseOldVelocity();
@@ -233,25 +233,22 @@ void CCamera::WheelMouse(int nDelta)
 	m_Zoom = m_pCamera.posV - m_pCamera.posR;
 	D3DXVec3Normalize(&m_Zoom, &m_Zoom);
 
-	if (CManager::GetInputKeyboard()->GetPress(DIK_LSHIFT))
-	{
-		if (nDelta > 0)
-		{// マウスの値が正
-			m_pCamera.fDistance -= 10.0f;
-		}
-		else if (nDelta < 0)
-		{// マウスの値が負
-			m_pCamera.fDistance += 10.0f;
-		}
-
-		if (m_pCamera.fDistance <= 250.0f)
-		{// 250.0f以下なら
-			m_pCamera.fDistance = 250.0f;
-		}
-
-		// カメラの視点の情報
-		m_pCamera.posV.x = m_pCamera.posR.x - sinf(m_pCamera.rot.x) * sinf(m_pCamera.rot.y) * m_pCamera.fDistance;
-		m_pCamera.posV.y = m_pCamera.posR.y - cosf(m_pCamera.rot.x) * m_pCamera.fDistance;
-		m_pCamera.posV.z = m_pCamera.posR.z - sinf(m_pCamera.rot.x) * cosf(m_pCamera.rot.y) * m_pCamera.fDistance;
+	if (nDelta > 0)
+	{// マウスの値が正
+		m_pCamera.fDistance -= 10.0f;
 	}
+	else if (nDelta < 0)
+	{// マウスの値が負
+		m_pCamera.fDistance += 10.0f;
+	}
+
+	if (m_pCamera.fDistance <= 250.0f)
+	{// 250.0f以下なら
+		m_pCamera.fDistance = 250.0f;
+	}
+
+	// カメラの視点の情報
+	m_pCamera.posV.x = m_pCamera.posR.x - sinf(m_pCamera.rot.x) * sinf(m_pCamera.rot.y) * m_pCamera.fDistance;
+	m_pCamera.posV.y = m_pCamera.posR.y - cosf(m_pCamera.rot.x) * m_pCamera.fDistance;
+	m_pCamera.posV.z = m_pCamera.posR.z - sinf(m_pCamera.rot.x) * cosf(m_pCamera.rot.y) * m_pCamera.fDistance;
 }

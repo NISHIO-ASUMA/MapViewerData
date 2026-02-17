@@ -136,7 +136,7 @@ void CEditManager::Update(void)
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 0.6f)); 
 
 			// 配置ボタン
-			if (ImGui::Button("Create") || CManager::GetInputKeyboard()->GetTrigger(DIK_RETURN))
+			if (ImGui::Button("Create") /*|| CManager::GetInputKeyboard()->GetTrigger(DIK_RETURN)*/)
 			{
 				// オブジェクトを生成
 				CMapObject* pMapObj = CMapObject::Create(m_pos, m_rot, m_size,m_nTypeIdx,m_isStatic);
