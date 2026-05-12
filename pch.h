@@ -37,6 +37,17 @@
 #pragma comment(lib,"Winmm.lib")
 #pragma comment(lib,"shlwapi.lib")
 
+#include "Effekseer.h"
+#include "EffekseerRendererDX9.h"
+
+#ifdef _DEBUG
+#pragma comment(lib, "Effekseerd.lib")
+#pragma comment(lib, "EffekseerRendererDX9d.lib")
+#else
+#pragma comment(lib, "Effekseer.lib")
+#pragma comment(lib, "EffekseerRendererDX9.lib")
+#endif // _DEBUG
+
 //*********************************************************
 // É}ÉNÉçíËã`
 //*********************************************************

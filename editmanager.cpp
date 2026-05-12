@@ -22,6 +22,7 @@
 #include "json.hpp"
 #include "manager.h"
 #include "meshfield.h"
+#include "renderer.h"
 
 //*********************************************************
 // 名前空間
@@ -384,6 +385,11 @@ void CEditManager::Update(void)
 //=========================================================
 void CEditManager::Draw(void)
 {
+	//// エフェクト
+	//m_efkRenderer->BeginRendering();
+	//m_efkManager->Draw();
+	//m_efkRenderer->EndRendering();
+
 	// デバイスポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetRenderer()->GetDevice();
 

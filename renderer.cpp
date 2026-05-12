@@ -28,7 +28,7 @@ int CRenderer::m_fps = 0;					// FPSƒJƒEƒ“ƒg
 CRenderer::CRenderer() : m_pD3D(nullptr),
 m_pD3DDevice(nullptr),
 m_pImguiManager(nullptr),
-m_backCol(COLOR_BLACK),
+m_backCol(COLOR_RED),
 m_isActive(false)
 {
 
